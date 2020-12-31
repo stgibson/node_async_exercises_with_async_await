@@ -30,12 +30,30 @@ $(async function() {
   const fact = await getFact(FAVORITE_NUM);
   console.log(fact);
 
-  // get data on mult numbers
+  // get facts on mult numbers
   try {
     const resp = await axios.get(`${BASE_URL}${FAVORITE_NUM},42?json`);
-    facts = resp.data;
+    const facts = resp.data;
     for (let num in facts) {
-      $("#mult-num-facts").append($(generateFact(facts[num])))
+      $("#mult-num-facts").append(generateFact(facts[num]));
+    }
+  }
+  catch(e) {
+    console.log(e);
+  }
+
+  // get multiple facts on favorite number
+  try {
+    const NUM_OF_FACTS = 4;
+    const promises = [];
+    for (let i = 0; i < NUM_OF_FACTS; i++) {
+      const promise = axios.get(`${BASE_URL}${FAVORITE_NUM}?json`);
+      promises.push(promise);
+    }
+    const responses = await Promise.all(promises);
+    for (let response of responses) {
+      const fact = response.data.text;
+      $("#favorite-num-facts").append(generateFact(fact));
     }
   }
   catch(e) {
